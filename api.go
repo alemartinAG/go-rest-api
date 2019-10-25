@@ -10,16 +10,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Matrices structure containing all the matrices recieved from java program
 type Matrices []struct {
 	Matrix string  `json:"matrix"`
 	Values [][]int `json:"values"`
 }
 
+// Recieves matrices and loads them into a structure
 func recMatrices(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Error with matrices")
+		fmt.Fprintf(w, "ERROR")
 	}
 
 	responseString := string(reqBody)
@@ -31,7 +33,10 @@ func recMatrices(w http.ResponseWriter, r *http.Request) {
 	err1 := json.Unmarshal([]byte(responseString), &m)
 	if err1 != nil {
 		log.Println(err)
+		fmt.Fprintf(w, "ERROR")
 	}
+
+	fmt.Fprintf(w, "SUCCESS")
 
 }
 
