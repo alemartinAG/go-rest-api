@@ -13,8 +13,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -39,28 +37,29 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome home!")
 }
 
+/*
 func createEvent(w http.ResponseWriter, r *http.Request) {
 	//var newEvent event
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
 	}
-	
+
 	responseString := string(reqBody)
 	data := strings.SplitAfterN(responseString, "=", 2)
 
 	arg := data[0]
 	value := data[1]
 
-	fmt.Printf("responseString: %s\n",responseString)
+	fmt.Printf("responseString: %s\n", responseString)
 	fmt.Printf("argument: %s\n", arg)
 	fmt.Printf("value: %s\n", value)
 
-	if arg != "LOOP="{
+	if arg != "LOOP=" {
 		return
 	}
 
-	fmt.Printf("responseString: %s\n",responseString)
+	fmt.Printf("responseString: %s\n", responseString)
 	fmt.Printf("argument: %s\n", arg)
 	fmt.Printf("value: %s\n", value)
 
@@ -72,9 +71,9 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 	count := C.int(cantidad)
 	suma := C.loop(count)
 
-	fmt.Fprintf(w, "Suma = %d\n", suma);
+	fmt.Fprintf(w, "Suma = %d\n", suma)
 
-}
+}*/
 
 func getOneEvent(w http.ResponseWriter, r *http.Request) {
 	eventID := mux.Vars(r)["id"]
@@ -121,14 +120,54 @@ func deleteEvent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func recMatrices(w http.ResponseWriter, r *http.Request) {
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Error with matrices")
+	}
+
+	responseString := string(reqBody)
+
+	fmt.Printf("responseString: %s\n", responseString)
+
+	var m Matrices
+	err1 := json.Unmarshal([]byte(responseString), &m)
+	if err1 != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(m[0])
+	fmt.Println(m[1])
+	fmt.Println(m[1].Values[1][0])
+
+}
+
+type Matrices []struct {
+	Matrix string  `json:"matrix"`
+	Values [][]int `json:"values"`
+}
+
+func fireTransition(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func areEnabled(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func main() {
 	//initEvents()
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homeLink)
-	router.HandleFunc("/event", createEvent).Methods("POST")
-	router.HandleFunc("/events", getAllEvents).Methods("GET")
-	router.HandleFunc("/events/{id}", getOneEvent).Methods("GET")
-	router.HandleFunc("/events/{id}", updateEvent).Methods("PATCH")
-	router.HandleFunc("/events/{id}", deleteEvent).Methods("DELETE")
+	//router.HandleFunc("/", homeLink)
+	//router.HandleFunc("/event", createEvent).Methods("POST")
+	//router.HandleFunc("/events", getAllEvents).Methods("GET")
+	//router.HandleFunc("/events/{id}", getOneEvent).Methods("GET")
+	//router.HandleFunc("/events/{id}", updateEvent).Methods("PATCH")
+	//router.HandleFunc("/events/{id}", deleteEvent).Methods("DELETE")
+	router.HandleFunc("/matrices", recMatrices).Methods("POST")
+	router.HandleFunc("/fire", fireTransition).Methods("POST")
+	router.HandleFunc("/enabled", areEnabled).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8080", router))
+
 }
