@@ -8,7 +8,7 @@ package main
 import "C"
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -48,7 +48,7 @@ func putValue(w http.ResponseWriter, r *http.Request) {
 
 	responseString := string(reqBody)
 
-    data := Matrix{}
+    /*data := Matrix{}
     json.Unmarshal([]byte(responseString), &data)
 
     for i := 0; i < len(data); i++ {
@@ -58,7 +58,7 @@ func putValue(w http.ResponseWriter, r *http.Request) {
     }
 
     fmt.Println("------------------------------------")
-    
+  
     for i := 0; i < len(data); i++ {
     	
 	    str := C.CString(data[i].Type)
@@ -72,19 +72,19 @@ func putValue(w http.ResponseWriter, r *http.Request) {
 		C.free(unsafe.Pointer(str))
 		
     	//fmt.Println("Type: ", data[i].Type)
-    }
+    }*/
 
     
-
-    C.printParsed()
-
     /*rows := C.int(len(data[0].Values))
     columns := C.int(len(data[0].Values[0]))*/
     //matr := (**C.int)(unsafe.Pointer(&data[0].Values[0][0]))
 
-    //str := C.CString(responseString)
-	//C.pass_json(str)
-	//C.free(unsafe.Pointer(str))
+    str := C.CString(responseString)
+	C.pass_json(str)
+	C.free(unsafe.Pointer(str))
+
+	C.printMatrices()
+
 
 
 	

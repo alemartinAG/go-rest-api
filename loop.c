@@ -1,44 +1,112 @@
 #include "loop.h"
+#include "cJSON.h"
 #include <stdio.h>
 #include <string.h>
 
-#define SIZE 10000
-#define NMAT 5
 #define N_PARAM 4
+#define N_MATR	5
 #define JSON_TYPE_1 "\"matrix\""
 #define JSON_TYPE_2 "\"values\""
+#define JSON_TYPE_3 "\"rows\""
+#define JSON_TYPE_4 "\"columns\""
 
-char parsed[NMAT*2][SIZE];
-int ** incidence;
-int ** inhibition;
-int count = 0;
 
-void pass_json(char * json){
-	
-	strcpy(parsed[count], json);
-	count = count+1;
-}
 
-void initMatrices(){
+struct PetriMatrix matrixIndex[N_MATR];
 
-	incidence = (int **)malloc(atoi(parsed[2]) * sizeof(int*));
-	for(int i = 0; i < rows; i++) incidence[i] = (int *)malloc(atoi(parsed[3]) * sizeof(int));
+void pass_json(char * strJson){
 
-}
+	cJSON *root = cJSON_Parse(strJson);
 
-void printParsed(){
+	cJSON *item_iterator = root ? root->child : 0;
+	cJSON *vector_iterator = NULL;
+	cJSON *int_iterator = NULL;
 
-	initMatrices();
+	int count = 0;
 
-	for (int i=0; i<atoi(parsed[2]); ++i)
+
+	while (item_iterator)
 	{
-		for(int j=0; j<atoi(parsed[3]); j++){
-			printf("%2d", incidence[i][j]);
+		char *name = cJSON_GetObjectItem(item_iterator, "matrix")->valuestring;
+
+		cJSON *values = cJSON_GetObjectItem(item_iterator, "values");
+
+		int rows = cJSON_GetObjectItem(item_iterator, "rows")->valueint;
+		int columns = cJSON_GetObjectItem(item_iterator, "columns")->valueint;
+
+		//int matrix[rows][columns];
+
+		struct PetriMatrix matrix;
+
+		matrix.id = malloc(strlen(name)*sizeof(char));
+
+		strcpy(matrix.id, name);
+		matrix.rows = rows;
+		matrix.columns = columns;
+
+		printf("%s...\n", name);
+
+		//matrix.values = malloc(rows * columns * sizeof(int));
+		matrix.values = (int **)malloc(rows * sizeof(int *)); 
+    	for (int k=0; k<rows; k++) 
+        	matrix.values[k] = (int *)malloc(columns * sizeof(int));
+
+		matrixIndex[count] = matrix;
+
+		vector_iterator = values ? values->child : 0;
+
+		int i = 0;
+
+		while(vector_iterator){
+
+			int_iterator = vector_iterator ? vector_iterator->child : 0;
+
+			int j = 0;
+
+			while(int_iterator){
+
+				//printf("%2d", int_iterator->valueint);
+				matrix.values[i][j] = int_iterator->valueint;
+
+				j++;
+				int_iterator = int_iterator->next;
+
+			}
+
+			//printf("\n");
+			i++;
+			vector_iterator = vector_iterator->next;
 		}
-		printf("\n");
+
+		printf("%s[%d][%d] - DONE!\n", name, rows, columns);
+
+		item_iterator = item_iterator->next;
+
+		count++;
+	}
+
+	cJSON_Delete(item_iterator);
+	cJSON_Delete(vector_iterator);
+	cJSON_Delete(int_iterator);
+	
+}
+
+void printMatrices(){
+
+	for(int k=0; k<N_MATR; k++){
+
+		printf("\n\n%s\n", matrixIndex[k].id);
+
+		for(int i=0; i<matrixIndex[k].rows; i++){
+			for (int j=0; j<matrixIndex[k].columns; j++){
+				printf("%2d", matrixIndex[k].values[i][j]);
+			}
+			printf("\n");
+		}
 	}
 
 }
+
 
 int loop(int* matrix, int rows, int columns) {
 
