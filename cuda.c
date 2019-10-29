@@ -1,4 +1,4 @@
-#include "loop.h"
+#include "cuda.h"
 #include "cJSON.h"
 #include <stdio.h>
 #include <string.h>
@@ -14,7 +14,7 @@
 
 struct PetriMatrix matrixIndex[N_MATR];
 
-void pass_json(char * strJson){
+bool pass_json(char * strJson){
 
 	cJSON *root = cJSON_Parse(strJson);
 
@@ -86,6 +86,8 @@ void pass_json(char * strJson){
 	cJSON_Delete(item_iterator);
 	cJSON_Delete(vector_iterator);
 	cJSON_Delete(int_iterator);
+
+	return true;
 	
 }
 
@@ -97,7 +99,7 @@ void printMatrices(){
 
 		for(int i=0; i<matrixIndex[k].rows; i++){
 			for (int j=0; j<matrixIndex[k].columns; j++){
-				printf("%2d", matrixIndex[k].values[i][j]);
+				printf("%2d ", matrixIndex[k].values[i][j]);
 			}
 			printf("\n");
 		}

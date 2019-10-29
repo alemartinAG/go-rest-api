@@ -1,8 +1,9 @@
-#ifndef _LOOP_H
-#define _LOOP_H
+#ifndef _CUDA_H
+#define _CUDA_H
 
+#include <stdbool.h>
 
-void pass_json(char * json);
+bool pass_json(char * json);
 void printMatrices();
 
 struct PetriMatrix
