@@ -24,34 +24,29 @@ void pass_json(char * strJson){
 
 	int count = 0;
 
+	while (item_iterator){
 
-	while (item_iterator)
-	{
 		char *name = cJSON_GetObjectItem(item_iterator, "matrix")->valuestring;
-
-		cJSON *values = cJSON_GetObjectItem(item_iterator, "values");
-
 		int rows = cJSON_GetObjectItem(item_iterator, "rows")->valueint;
 		int columns = cJSON_GetObjectItem(item_iterator, "columns")->valueint;
 
-		//int matrix[rows][columns];
+		cJSON *values = cJSON_GetObjectItem(item_iterator, "values");
 
 		struct PetriMatrix matrix;
+		matrixIndex[count] = matrix;
 
 		matrix.id = malloc(strlen(name)*sizeof(char));
+
+		matrix.values = (int **) malloc(rows * sizeof(int *)); 
+    	for (int k=0; k<rows; k++) {
+        	matrix.values[k] = (int *) malloc(columns * sizeof(int));
+    	}
 
 		strcpy(matrix.id, name);
 		matrix.rows = rows;
 		matrix.columns = columns;
 
-		printf("%s...\n", name);
-
-		//matrix.values = malloc(rows * columns * sizeof(int));
-		matrix.values = (int **)malloc(rows * sizeof(int *)); 
-    	for (int k=0; k<rows; k++) 
-        	matrix.values[k] = (int *)malloc(columns * sizeof(int));
-
-		matrixIndex[count] = matrix;
+		//printf("%s...\n", name);
 
 		vector_iterator = values ? values->child : 0;
 
@@ -65,7 +60,6 @@ void pass_json(char * strJson){
 
 			while(int_iterator){
 
-				//printf("%2d", int_iterator->valueint);
 				matrix.values[i][j] = int_iterator->valueint;
 
 				j++;
@@ -73,7 +67,6 @@ void pass_json(char * strJson){
 
 			}
 
-			//printf("\n");
 			i++;
 			vector_iterator = vector_iterator->next;
 		}
@@ -115,14 +108,6 @@ int loop(int* matrix, int rows, int columns) {
 	printf("Rows: %d\n", rows);
 	printf("Columns: %d\n", columns);
 	printf("matrix[0][0]: %d\n", matrix[0]);
-
-    
-    /*for(int i=0; i<rows; i++){
-    	for(int j=0; j<columns; j++){
-    		printf("%2d ", matrix[i][j]);
-    	}
-    	printf("\n");
-    }*/
 
     return suma;
 }
