@@ -4,7 +4,6 @@
 
 void pass_json(char * json);
 void printMatrices();
-int loop(int* matrix, int rows, int columns);
 
 struct PetriMatrix
 {

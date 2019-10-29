@@ -1,7 +1,7 @@
 package main
 
 /*
-#cgo CFLAGS: -g -Wall
+#cgo CFLAGS: -g -Wpedantic -Wall
 #include <stdlib.h>
 #include "loop.h"
 */

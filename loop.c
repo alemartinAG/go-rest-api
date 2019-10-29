@@ -24,50 +24,55 @@ void pass_json(char * strJson){
 
 	int count = 0;
 
-	while (item_iterator){
-
+	/* Obtains the objects */
+	while (item_iterator)
+	{
 		char *name = cJSON_GetObjectItem(item_iterator, "matrix")->valuestring;
-		int rows = cJSON_GetObjectItem(item_iterator, "rows")->valueint;
-		int columns = cJSON_GetObjectItem(item_iterator, "columns")->valueint;
 
 		cJSON *values = cJSON_GetObjectItem(item_iterator, "values");
 
+		int rows = cJSON_GetObjectItem(item_iterator, "rows")->valueint;
+		int columns = cJSON_GetObjectItem(item_iterator, "columns")->valueint;
+
+		/* Creates the structure an allocate 
+			memory for it */
 		struct PetriMatrix matrix;
-		matrixIndex[count] = matrix;
 
 		matrix.id = malloc(strlen(name)*sizeof(char));
-
-		matrix.values = (int **) malloc(rows * sizeof(int *)); 
-    	for (int k=0; k<rows; k++) {
-        	matrix.values[k] = (int *) malloc(columns * sizeof(int));
-    	}
-
 		strcpy(matrix.id, name);
+
 		matrix.rows = rows;
 		matrix.columns = columns;
 
-		//printf("%s...\n", name);
+		matrix.values = (int **)malloc(rows * sizeof(int *)); 
+    	for (int k=0; k<rows; k++) 
+        	matrix.values[k] = (int *)malloc(columns * sizeof(int));
 
+
+		matrixIndex[count] = matrix;
+
+
+		/* Obtains the int matrix */
 		vector_iterator = values ? values->child : 0;
 
-		int i = 0;
+		int r = 0;
 
 		while(vector_iterator){
 
 			int_iterator = vector_iterator ? vector_iterator->child : 0;
 
-			int j = 0;
+			int c = 0;
 
 			while(int_iterator){
 
-				matrix.values[i][j] = int_iterator->valueint;
+				matrix.values[r][c] = int_iterator->valueint;
 
-				j++;
+				c++;
 				int_iterator = int_iterator->next;
 
 			}
 
-			i++;
+			r++;
 			vector_iterator = vector_iterator->next;
 		}
 
@@ -98,16 +103,4 @@ void printMatrices(){
 		}
 	}
 
-}
-
-
-int loop(int* matrix, int rows, int columns) {
-
-	int suma = 0;
-
-	printf("Rows: %d\n", rows);
-	printf("Columns: %d\n", columns);
-	printf("matrix[0][0]: %d\n", matrix[0]);
-
-    return suma;
 }
